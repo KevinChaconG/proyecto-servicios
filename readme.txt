@@ -93,3 +93,17 @@ CREATE TABLE resena (
 
 ALTER TABLE resena
   ADD CONSTRAINT uq_resena_trabajo UNIQUE (id_trabajo);
+
+  /*//dentro de manejarLogin pongo esta vaina
+try {
+    setCargando(true);
+    // const respuesta = await login(email, password);
+
+    Alert.alert('Éxito', 'Login simulado exitoso.');
+
+    navigation.replace('ClientHome');
+
+} catch (error: any) {
+} finally {
+}*/
+// lo quite de manera temporal para saltarme el login

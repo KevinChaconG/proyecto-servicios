@@ -2,8 +2,8 @@ const { Sequelize } = require('sequelize')
 
 const sequelize = new Sequelize(
     'servicios_app',
-    'Kevin',
-    'Alejandra2731**',
+    'root',
+    '',
     {
         host: 'localhost',
         port: 3306,
@@ -11,6 +11,7 @@ const sequelize = new Sequelize(
 
     }
 )
+/*Kevin nombre de la database Alejandra2731** contraseña de la database*/
 
 sequelize.authenticate()
     .then(() => console.log('Conexión exitosa...'))
