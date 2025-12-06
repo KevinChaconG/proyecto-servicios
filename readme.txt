@@ -93,6 +93,12 @@ CREATE TABLE resena (
 
 ALTER TABLE resena
   ADD CONSTRAINT uq_resena_trabajo UNIQUE (id_trabajo);
+  ALTER TABLE trabajo ADD COLUMN descripcion TEXT;
+
+
+
+
+  
 
   /*//dentro de manejarLogin pongo esta vaina
 try {
@@ -107,3 +113,88 @@ try {
 } finally {
 }*/
 // lo quite de manera temporal para saltarme el login
+
+
+este lo uso por si no me da la verificacion de la contraseña, no tocar
+ async function manejarLogin(): Promise<void> {
+  try {
+    setCargando(true);
+    // const respuesta = await login(email, password);
+
+    Alert.alert('Éxito', 'Login simulado exitoso.');
+
+    navigation.replace('ClientHome');
+
+} catch (error: any) {
+} finally {
+}
+}
+
+  return (
+    <View style={styles.container}>
+      <Text style={styles.titulo}>Iniciar Sesión</Text>
+      <Text style={styles.label}>Email</Text>
+      <TextInput
+        style={styles.input}
+        placeholder="Ingresa tu email"
+        keyboardType="email-address"
+        autoCapitalize="none"
+        value={email}
+        onChangeText={setEmail}
+      />
+
+      <Text style={styles.label}>Contraseña</Text>
+      <TextInput
+        style={styles.input}
+        placeholder="Ingresa tu contraseña"
+        secureTextEntry
+        value={password}
+        onChangeText={setPassword}
+      />
+
+      <Button
+        title={cargando ? 'Ingresando...' : 'Ingresar'}
+        onPress={manejarLogin}
+        disabled={cargando}
+      />
+      
+      <View style={styles.linkContainer}>
+        <Button
+          title="Aún no tengo usuario (Registrarse)"
+          onPress={() => navigation.navigate('Register')}
+          color="#841584"
+        />
+      </View>
+    </View>
+  );
+}
+
+const styles = StyleSheet.create({
+    container: {
+        flex: 1,
+        padding: 24,
+        justifyContent: 'center',
+        backgroundColor: '#fff',
+    },
+    titulo: {
+        fontSize: 24,
+        fontWeight: 'bold',
+        marginBottom: 24,
+        textAlign: 'center',
+    },
+    label: {
+        fontSize: 14,
+        marginBottom: 6,
+    },
+    input: {
+        borderWidth: 1,
+        borderColor: '#ccc',
+        borderRadius: 6,
+        paddingHorizontal: 10,
+        paddingVertical: 8,
+        marginBottom: 16,
+    },
+    linkContainer: { 
+        marginTop: 20, 
+    },
+});

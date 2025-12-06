@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, Button, StyleSheet, Switch } from 'react-native';
+import { View, Text, TextInput, Button, StyleSheet, Switch, Alert } from 'react-native';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { RootStackParamList } from './HomeScreeen';
+import { register } from '../api/usuarioApi';
 
 type RegisterScreenProps = NativeStackScreenProps<RootStackParamList, 'Register'>;
 
@@ -10,12 +11,37 @@ const RegisterScreen: React.FC<RegisterScreenProps> = ({ navigation }) => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [isEntrepreneur, setIsEntrepreneur] = useState(false);
+    const [cargando, setCargando] = useState(false);
 
-    const handleRegister = () => {
-        console.log('Registro con datos:', { name, email, password, role: isEntrepreneur ? 'Emprendedor' : 'Cliente' });
-        
-        navigation.navigate('Login');
+    const handleRegister = async () => {
+        if (!name || !email || !password) {
+            Alert.alert('Datos Incompletos', 'tenés que completar el Nombre, Email y Contraseña.');
+            return;
+        }
+
+        setCargando(true);
+
+        try {
+            const rol = isEntrepreneur ? 'EMPRENDEDOR' : 'CLIENTE';
+            
+            await register({
+                nombre: name,
+                email: email,
+                password: password,
+                rol_usuario: rol,
+            });
+
+            Alert.alert('¡Registro Con Exito!', 'Tu cuenta se creó. Ahora podés iniciar sesión.');
+            navigation.navigate('Login');
+
+        } catch (error: any) {
+            console.error('Error durante el registro:', error);
+            Alert.alert('Error de Registro', error.message || 'Ocurrió un error al intentar crear la cuenta.');
+        } finally {
+            setCargando(false);
+        }
     };
+
     return (
         <View style={styles.container}>
             <Text style={styles.title}>Crear Nueva Cuenta</Text>
@@ -53,7 +79,11 @@ const RegisterScreen: React.FC<RegisterScreenProps> = ({ navigation }) => {
                 <Text style={styles.roleStatus}>{isEntrepreneur ? 'Sí' : 'No (Soy Cliente)'}</Text>
             </View>
 
-            <Button title="Registrarse" onPress={handleRegister} />
+            <Button 
+                title={cargando ? 'Registrando...' : 'Registrarse'} 
+                onPress={handleRegister} 
+                disabled={cargando}
+            />
             
             <View style={styles.linkContainer}>
                 <Button title="Ya tengo una cuenta (Login)" onPress={() => navigation.navigate('Login')} />

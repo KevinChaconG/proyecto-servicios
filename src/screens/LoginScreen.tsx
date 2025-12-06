@@ -18,10 +18,10 @@ export default function LoginScreen({ navigation }: LoginScreenProps) {
   const [password, setPassword] = useState<string>('');
   const [cargando, setCargando] = useState<boolean>(false);
 
-  function manejarRedireccion(rol: string) {
+  /*function manejarRedireccion(rol: string) {
         Alert.alert('Simulación de Redirección', `Redirigiendo como ${rol}.`);
         navigation.replace('Home');
-   }
+   }*/
 
   async function manejarLogin(): Promise<void> {
   try {
