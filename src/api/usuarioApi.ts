@@ -1,32 +1,84 @@
 import { BASE_URL } from './config';
 
 export interface UsuarioLogin {
-  id_usuario: number;
-  nombre: string;
-  apellido: string | null;
-  email: string;
-  rol_usuario: 'EMPRENDEDOR' | 'CLIENTE' | 'ADMIN';
+    id_usuario: number;
+    nombre: string;
+    apellido: string | null;
+    email: string;
+    rol_usuario: 'EMPRENDEDOR' | 'CLIENTE' | 'ADMIN';
 }
 
 export interface LoginResponse {
-  mensaje: string;
-  usuario: UsuarioLogin;
+    mensaje: string;
+    usuario: UsuarioLogin;
+}
+
+export interface RegistroData {
+    nombre: string;
+    apellido?: string;
+    email: string;
+    telefono?: string;
+    password: string;
+    rol_usuario: 'EMPRENDEDOR' | 'CLIENTE';
+}
+
+export interface ActualizarData {
+    nombre?: string;
+    apellido?: string;
+    telefono?: string;
+    password?: string;
 }
 
 export async function login(email: string, password: string): Promise<LoginResponse> {
-  const respuesta = await fetch(`${BASE_URL}/usuarios/login`, {
-    method: 'POST',
-    headers: {
-      'content-type': 'application/json',
-    },
-    body: JSON.stringify({ email, password }),
-  });
+    const respuesta = await fetch(`${BASE_URL}/usuarios/login`, {
+        method: 'POST',
+        headers: {
+            'content-type': 'application/json',
+        },
+        body: JSON.stringify({ email, password }),
+    });
 
-  const data = await respuesta.json();
+    const data = await respuesta.json();
 
-  if (!respuesta.ok) {
-    throw new Error(data.mensaje || 'Error al iniciar sesión');
-  }
+    if (!respuesta.ok) {
+        throw new Error(data.mensaje || 'Credenciales inválidas o error de conexión.');
+    }
 
-  return data;
+    return data;
 }
+
+export async function register(data: RegistroData): Promise<void> {
+    const response = await fetch(`${BASE_URL}/usuarios/registro`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(data),
+    });
+
+    const responseData = await response.json();
+
+    if (!response.ok) {
+        throw new Error(responseData.mensaje || 'Error desconocido al intentar registrar.');
+    }
+}
+
+export async function actualizarUsuario(idUsuario: number, data: ActualizarData): Promise<any> {
+    const response = await fetch(`${BASE_URL}/usuarios/${idUsuario}`, {
+        method: 'PUT',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(data),
+    });
+
+    const responseData = await response.json();
+
+    if (!response.ok) {
+        throw new Error(responseData.mensaje || 'Error desconocido al actualizar el perfil.');
+    }
+
+    return responseData.usuario;
+}
+
+module.exports = { login, register, actualizarUsuario }

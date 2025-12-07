@@ -1,9 +1,9 @@
 const express = require('express');
 const cors = require('cors');
-
 const { sequelize } = require('./Modelos');
 const usuarioRoutes = require('./routes/UsuarioRoutes');
-const servicioRoutes = require('./routes/ServicioRoutes');
+/*const servicioRoutes = require('./routes/ServicioRoutes');*/
+const trabajoRoutes = require('./routes/TrabajoRoutes');
 
 const app = express();
 
@@ -11,6 +11,8 @@ app.use(cors());
 app.use(express.json());
 
 app.use('/usuarios', usuarioRoutes);
+/*app.use('/servicios', servicioRoutes);*/
+app.use('/trabajo', trabajoRoutes);
 
 sequelize.authenticate()
   .then(() => {
