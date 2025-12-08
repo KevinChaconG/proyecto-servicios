@@ -5,13 +5,20 @@ import { RootStackParamList } from './HomeScreeen';
 import { login } from '../api/usuarioApi';
 import { Image } from 'react-native';
 import { useAuth } from '../Context/AuthContext';
+import type { Usuario } from '../Context/AuthContext';
 
 type LoginScreenProps = NativeStackScreenProps<RootStackParamList, 'Login'>;
+
+interface LoginResponse {
+  usuario: Usuario;
+  token?: string;
+}
 
 export default function LoginScreen({ navigation }: LoginScreenProps) {
     const [email, setEmail] = useState<string>('');
     const [password, setPassword] = useState<string>('');
     const [cargando, setCargando] = useState<boolean>(false);
+
     const {setUsuario}=useAuth();
 
     async function manejarLogin(): Promise<void> {
@@ -23,14 +30,24 @@ export default function LoginScreen({ navigation }: LoginScreenProps) {
         try {
             setCargando(true);
 
-            const respuesta = await login(email, password);
-            Alert.alert('Masizo', `¡Bienvenido(a), ${respuesta.usuario.nombre} ${respuesta.usuario.apellido}!`);
+            const respuesta = (await login(email, password)) as LoginResponse;
+
+        if (!respuesta || !respuesta.usuario) {
+        throw new Error('Respuesta inválida del servidor');
+      }
+
+      setUsuario(respuesta.usuario);
+
+            Alert.alert('Macizo', `¡Bienvenido(a), ${respuesta.usuario.nombre} ${respuesta.usuario.apellido}!`);
+
             const rol = respuesta.usuario.rol_usuario;
 
             switch (rol) {
                 case 'CLIENTE':
                     navigation.replace('ClientHome');
+                    
                     break;
+                    
                 case 'EMPRENDEDOR':
                     navigation.replace('EmprendedorHome');
                     break;

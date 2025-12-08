@@ -28,6 +28,8 @@ export type RootStackParamList = {
         nombreEmprendedor: string;
     };
     EditarPerfil: undefined;
+    EmprendedorPublicarServicio: undefined;
+    EmprendedorServicios: undefined;
 };
 
 type HomeScreenProps = NativeStackScreenProps<RootStackParamList, 'Home'>;

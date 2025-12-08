@@ -11,13 +11,10 @@ export interface Usuario {
 
 interface AuthContextType {
   usuario: Usuario | null;
-  setUsuario: (user: Usuario | null) => void;
+  setUsuario: React.Dispatch<React.SetStateAction<Usuario | null>>;
 }
 
-const AuthContext = createContext<AuthContextType>({
-  usuario: null,
-  setUsuario: () => {},
-});
+const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [usuario, setUsuario] = useState<Usuario | null>(null);
@@ -29,4 +26,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   );
 };
 
-export const useAuth = () => useContext(AuthContext);
+export const useAuth = () => {
+  const ctx = useContext(AuthContext);
+  if (!ctx) {
+    throw new Error('useAuth debe usarse dentro de un AuthProvider');
+  }
+  return ctx;
+};
