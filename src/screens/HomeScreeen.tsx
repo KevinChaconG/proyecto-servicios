@@ -1,6 +1,7 @@
 import React from 'react';
 import { View, Text, Button, StyleSheet } from 'react-native';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
+import { Image } from 'react-native';
 
 export interface ServiceDetailParams {
     id: string;
@@ -34,7 +35,13 @@ type HomeScreenProps = NativeStackScreenProps<RootStackParamList, 'Home'>;
 const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
     return (
         <View style={styles.container}>
-            <Text style={styles.title}>¡Bienvenido a mi chambita!</Text>
+            <Image
+                source={require('../../assets/logo.png')}
+                style={{ width: 300, height: 300, alignSelf: 'center'}}
+                resizeMode="contain"
+            />
+
+            <Text style={styles.title}>¡Bienvenido a Mi Chambita!</Text>
             <Text style={styles.subtitle}>Encontrá o publicá servicios facilmente</Text>
             <Button
                 title="Ingresar a la Aplicación"
@@ -61,6 +68,7 @@ const styles = StyleSheet.create({
         marginBottom: 30,
         textAlign: 'center',
     },
+    
 });
 
 export default HomeScreen;

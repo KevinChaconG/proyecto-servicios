@@ -83,10 +83,8 @@ const EditarPerfilScreen: React.FC<EditarPerfilProps> = ({ navigation }) => {
     return (
         <ScrollView style={styles.container}>
             <Text style={styles.title}>Editar Perfil</Text>
-            <Text style={styles.subtitle}>ID de Usuario: {ID_USUARIO_LOGUEADO}</Text>
             <Text style={styles.helpText}>Solo edita los campos que desees cambiar.</Text>
 
-            {/* --- Nombre --- */}
             <Text style={styles.label}>Nombre (*)</Text>
             <TextInput
                 style={styles.input}
@@ -95,16 +93,14 @@ const EditarPerfilScreen: React.FC<EditarPerfilProps> = ({ navigation }) => {
                 placeholder="Nombre"
             />
             
-            {/* --- Apellido --- */}
             <Text style={styles.label}>Apellido</Text>
             <TextInput
                 style={styles.input}
-                value={apellido || ''} // Aseguramos que sea string para el TextInput
+                value={apellido || ''}
                 onChangeText={setApellido}
                 placeholder="Apellido"
             />
 
-            {/* --- Teléfono --- */}
             <Text style={styles.label}>Teléfono</Text>
             <TextInput
                 style={styles.input}
@@ -114,7 +110,6 @@ const EditarPerfilScreen: React.FC<EditarPerfilProps> = ({ navigation }) => {
                 placeholder="Teléfono (Ej: 99887766)"
             />
 
-            {/* --- Contraseña --- */}
             <Text style={styles.label}>Nueva Contraseña (Dejar vacío si no quieres cambiar)</Text>
             <TextInput
                 style={styles.input}

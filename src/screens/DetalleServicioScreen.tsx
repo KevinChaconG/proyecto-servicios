@@ -6,21 +6,21 @@ import { RootStackParamList } from './HomeScreeen';
 type DetalleServicioProps = NativeStackScreenProps<RootStackParamList, 'DetalleServicio'>;
 
 const DetalleServicio: React.FC<DetalleServicioProps> = ({ route, navigation }) => {
-    const { titulo, emprendedor, descripcion, precio, contactoEmail, id , idEmprendedor } = route.params;
+    const { titulo, emprendedor, descripcion, precio, contactoEmail, id, idEmprendedor } = route.params;
 
     const manejarContacto = () => {
-      navigation.navigate('ContactoEmprendedor', { 
-            idServicio: id,
+        navigation.navigate('ContactoEmprendedor', {
+            idServicio: id,
             idEmprendedor: idEmprendedor,
-            nombreEmprendedor: emprendedor,
-        }); 
-    };
+            nombreEmprendedor: emprendedor,
+        });
+    };
 
     return (
         <SafeAreaView style={styles.safeArea}>
             <ScrollView style={styles.container}>
                 <Text style={styles.title}>{titulo}</Text>
-                
+
                 <View style={styles.section}>
                     <Text style={styles.sectionTitle}>Detalles del Emprendedor</Text>
                     <Text style={styles.infoText}>Ofrecido por: {emprendedor}</Text>
@@ -40,14 +40,14 @@ const DetalleServicio: React.FC<DetalleServicioProps> = ({ route, navigation }) 
                 )}
 
             </ScrollView>
-            
+
             <View style={styles.footer}>
-                <Button 
-                    title="Contactar al Emprendedor" 
+                <Button
+                    title="Contactar al Emprendedor"
                     onPress={manejarContacto}
                 />
-                <Button 
-                    title="Volver a Servicios" 
+                <Button
+                    title="Volver a Servicios"
                     onPress={() => navigation.goBack()}
                     color="#888"
                 />
