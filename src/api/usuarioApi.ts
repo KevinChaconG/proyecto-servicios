@@ -39,6 +39,7 @@ export async function login(email: string, password: string): Promise<LoginRespo
     });
 
     const data = await respuesta.json();
+    console.log('RESPUESTA CRUDA DEL BACKEND /login:', data);
 
     if (!respuesta.ok) {
         throw new Error(data.mensaje || 'Credenciales inválidas o error de conexión.');

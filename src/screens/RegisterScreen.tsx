@@ -3,11 +3,13 @@ import { View, Text, TextInput, Button, StyleSheet, Switch, Alert } from 'react-
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { RootStackParamList } from './HomeScreeen';
 import { register } from '../api/usuarioApi';
+import { Image } from 'react-native';
 
 type RegisterScreenProps = NativeStackScreenProps<RootStackParamList, 'Register'>;
 
 const RegisterScreen: React.FC<RegisterScreenProps> = ({ navigation }) => {
     const [name, setName] = useState('');
+    const [lastname, setLastName] = useState('');
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [Esemprendedor, setEsemprendedor] = useState(false);
@@ -26,6 +28,7 @@ const RegisterScreen: React.FC<RegisterScreenProps> = ({ navigation }) => {
             
             await register({
                 nombre: name,
+                apellido: lastname,
                 email: email,
                 password: password,
                 rol_usuario: rol,
@@ -44,13 +47,26 @@ const RegisterScreen: React.FC<RegisterScreenProps> = ({ navigation }) => {
 
     return (
         <View style={styles.container}>
+
+                        <Image
+                            source={require('../../assets/logo.png')}
+                            style={{ width: 180, height: 180, alignSelf: 'center' }}
+                            resizeMode="contain"
+                        />
+
             <Text style={styles.title}>Crear Nueva Cuenta</Text>
             
             <TextInput
                 style={styles.input}
-                placeholder="Nombre Completo"
+                placeholder="Nombre"
                 value={name}
                 onChangeText={setName}
+            />
+            <TextInput
+                style={styles.input}
+                placeholder="Apellido"
+                value={lastname}
+                onChangeText={setLastName}
             />
             <TextInput
                 style={styles.input}

@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { View, Text, TextInput, Button, StyleSheet, Alert, ScrollView } from 'react-native';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { RootStackParamList } from './HomeScreeen'; 
-import { crearSolicitudTrabajo } from '../api/TreabajoApi';
+import { crearSolicitudTrabajo } from '../api/TrabajoApi';
 
 type EmprendedorContactProps = NativeStackScreenProps<RootStackParamList, 'ContactoEmprendedor'>;
 

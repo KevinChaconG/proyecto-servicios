@@ -1,59 +1,56 @@
 import React from 'react';
 import { View, Text, StyleSheet, SafeAreaView, TouchableOpacity } from 'react-native';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
-import { RootStackParamList } from './HomeScreeen'; 
+import { RootStackParamList } from './HomeScreeen';
+import ProfileHeader from '../Componentes/ProfileHeader';
 
 type AdminHomeProps = NativeStackScreenProps<RootStackParamList, 'AdminHome'>;
 
 const AdminHome: React.FC<AdminHomeProps> = ({ navigation }) => {
-    
+
     const navigateTo = (screenName: keyof RootStackParamList) => {
         console.log(`Navegando a: ${screenName}`);
     };
 
     return (
         <SafeAreaView style={styles.safeArea}>
+            <ProfileHeader
+                title="Panel de Administrador"
+                onEditProfile={() => navigation.navigate('EditarPerfil')}
+                onLogout={() => navigation.replace('Home')}
+            />
             <View style={styles.header}>
-                <Text style={styles.headerTitle}>Panel de Administrador 👑</Text>
                 <Text style={styles.subtitle}>Gestión Central del Sistema</Text>
             </View>
 
             <View style={styles.container}>
-                
+
                 {/* este boton lo puse para gestionar los servicios iria tipo /GestionarServicios */}
-                <TouchableOpacity 
-                    style={styles.card} 
-                    onPress={() => navigateTo('')}
+                <TouchableOpacity
+                    style={styles.card}
+                    onPress={() => navigateTo('AdminHome')}
                 >
                     <Text style={styles.cardTitle}>Gestionar Servicios</Text>
                     <Text style={styles.cardSubtitle}>Revisar y moderar todas las ofertas publicadas.</Text>
                 </TouchableOpacity>
 
                 {/* este es un boton para gestionar los usuarios existentes se va a llamar /GestionarUsuarios */}
-                <TouchableOpacity 
-                    style={styles.card} 
-                    onPress={() => navigateTo('')}
+                <TouchableOpacity
+                    style={styles.card}
+                    onPress={() => navigateTo('AdminHome')}
                 >
                     <Text style={styles.cardTitle}>Gestionar Usuarios</Text>
                     <Text style={styles.cardSubtitle}>Revisar y modificar los roles ya sea clientes o emprendedores).</Text>
                 </TouchableOpacity>
 
                 {/* aqui estoy poniendo un boton para reportes */}
-                <TouchableOpacity 
-                    style={styles.card} 
-                    onPress={() => console.log('ir a Reportes del Sistema')} 
+                <TouchableOpacity
+                    style={styles.card}
+                    onPress={() => console.log('ir a Reportes del Sistema')}
                 >
                     <Text style={styles.cardTitle}>Reportes del sistema</Text>
                     <Text style={styles.cardSubtitle}>Ver estadísticas de uso</Text>
                 </TouchableOpacity>
-
-                <TouchableOpacity 
-                    style={styles.logoutButton} 
-                    onPress={() => navigation.replace('Home')}
-                >
-                    <Text style={styles.logoutText}>Cerrar Sesión</Text>
-                </TouchableOpacity>
-
             </View>
         </SafeAreaView>
     );
@@ -84,4 +81,4 @@ const styles = StyleSheet.create({
     logoutText: { color: 'red', fontSize: 16, padding: 10, fontWeight: 'bold' }
 });
 
-export default  AdminHome;
+export default AdminHome;
