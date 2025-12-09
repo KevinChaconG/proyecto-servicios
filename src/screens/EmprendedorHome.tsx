@@ -28,6 +28,7 @@ const navigateTo = (
           style={styles.card}
           onPress={() => navigateTo('EmprendedorPublicarServicio')}
           
+          
         >
           <Text style={styles.cardTitle}>Publicar un Servicio</Text>
           <Text style={styles.cardSubtitle}>Publica nuevos trabajos o servicios para que los clientes las vean.</Text>
@@ -39,7 +40,9 @@ const navigateTo = (
         >
           <Text style={styles.cardTitle}>Servicios Publicados</Text>
           <Text style={styles.cardSubtitle}>Administra tus trabajos o servicios existentes, y ve respuestas de los clientes.</Text>
+          
         </TouchableOpacity>
+        
       </View>
     </SafeAreaView>
   );
