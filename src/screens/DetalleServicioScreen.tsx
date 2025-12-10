@@ -35,7 +35,7 @@ const DetalleServicio: React.FC<DetalleServicioProps> = ({ route, navigation }) 
                 {precio !== undefined && (
                     <View style={styles.section}>
                         <Text style={styles.sectionTitle}>Precio Estimado</Text>
-                        <Text style={styles.priceText}>${precio.toFixed(2)}</Text>
+                        <Text style={styles.priceText}>L. {precio.toFixed(2)}</Text>
                     </View>
                 )}
 

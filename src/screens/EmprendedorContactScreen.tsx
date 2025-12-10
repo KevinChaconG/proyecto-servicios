@@ -1,124 +1,166 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, Button, StyleSheet, Alert, ScrollView } from 'react-native';
+import {
+  View,
+  Text,
+  StyleSheet,
+  TextInput,
+  Button,
+  Alert,
+  ActivityIndicator,
+} from 'react-native';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
-import { RootStackParamList } from './HomeScreeen'; 
+import { RootStackParamList } from './HomeScreeen';
+import ProfileHeader from '../Componentes/ProfileHeader';
+import { useAuth } from '../Context/AuthContext';
 import { crearSolicitudTrabajo } from '../api/TrabajoApi';
 
-type EmprendedorContactProps = NativeStackScreenProps<RootStackParamList, 'ContactoEmprendedor'>;
+type Props = NativeStackScreenProps<
+  RootStackParamList,
+  'ContactoEmprendedor'
+>;
 
-const EmprendedorContactScreen: React.FC<EmprendedorContactProps> = ({ route, navigation }) => {
-    const { idServicio, nombreEmprendedor, idEmprendedor } = route.params; 
+const ContactoEmprendedor: React.FC<Props> = ({ route, navigation }) => {
+  const { usuario } = useAuth();
+  const { idServicio, idEmprendedor, nombreEmprendedor } = route.params;
 
-    const [mensaje, setMensaje] = useState('');
-    const [direccion, setDireccion] = useState('');
-    const [cargando, setCargando] = useState(false);
+  const [direccionTrabajo, setDireccionTrabajo] = useState('');
+  const [mensaje, setMensaje] = useState('');
+  const [cargando, setCargando] = useState(false);
 
-    const idClienteSimulado = 5; 
-    
-    const handleEnviarSolicitud = async () => {
-        if (!mensaje || !direccion) {
-            Alert.alert('Datos Faltantes', 'Por favor, proporcioná un mensaje y la dirección para el trabajo.');
-            return;
-        }
+  async function manejarEnviarSolicitud() {
+    if (!usuario) {
+      Alert.alert('Error', 'Debes iniciar sesión para enviar una solicitud.');
+      return;
+    }
 
-        setCargando(true);
+    if (!direccionTrabajo) {
+      Alert.alert(
+        'Validación',
+        'Ingresa la dirección donde necesitas el servicio.'
+      );
+      return;
+    }
 
-        const idEmprendedorNumerico = Number(idEmprendedor);
-        if (isNaN(idEmprendedorNumerico)) {
-            Alert.alert('Error', 'ID de emprendedor inválido.');
-            setCargando(false);
-            return;
-        }
+    try {
+      setCargando(true);
 
-        try {
-            await crearSolicitudTrabajo({
-                id_servicio: idServicio,
-                id_cliente: idClienteSimulado, 
-                id_emprendedor: idEmprendedorNumerico,
-                direccion_trabajo: direccion,
-                mensaje_cliente: mensaje,
-            });
-            
-            Alert.alert(
-                'Solicitud Enviada ✅', 
-                `Tu solicitud para ${nombreEmprendedor} ha sido enviada con éxito. Ya podés coordinar con él.`
-            );
-            navigation.goBack(); 
+      await crearSolicitudTrabajo({
+        id_servicio: Number(idServicio),
+        id_cliente: usuario.id_usuario,
+        direccion_trabajo: direccionTrabajo,
+        mensaje_cliente: mensaje,
+      });
 
-        } catch (error: any) {
-            Alert.alert('Error', error.message || 'No se pudo enviar la solicitud. Verificá la conexión del backend.');
-        } finally {
-            setCargando(false);
-        }
-    };
+      Alert.alert(
+        'Solicitud enviada',
+        'Tu solicitud ha sido enviada. El emprendedor podrá verla en su panel.'
+      );
+      navigation.goBack();
+    } catch (error: any) {
+      console.error('Error al enviar solicitud:', error);
+      Alert.alert(
+        'Error',
+        error?.message || 'Ocurrió un problema al enviar la solicitud.'
+      );
+    } finally {
+      setCargando(false);
+    }
+  }
 
-    return (
-        <ScrollView contentContainerStyle={styles.container}>
-            <Text style={styles.title}>Solicitar Servicio</Text>
-            <Text style={styles.subtitle}>
-                Estás contactando a: <Text style={styles.boldText}>{nombreEmprendedor}</Text>
-            </Text>
-            
-            <View style={styles.section}>
-                <Text style={styles.label}>Mensaje/Detalles del Trabajo:</Text>
-                <TextInput
-                    style={[styles.input, styles.textArea]}
-                    placeholder="Describí lo que necesitás (tiempo, detalles, equipo, etc.)"
-                    multiline
-                    numberOfLines={4}
-                    value={mensaje}
-                    onChangeText={setMensaje}
-                />
-            </View>
+  return (
+    <View style={styles.safeArea}>
+      <ProfileHeader
+        title="Contactar emprendedor"
+        onEditProfile={() => navigation.navigate('EditarPerfil')}
+        onLogout={() => navigation.replace('Home')}
+      />
 
-            <View style={styles.section}>
-                <Text style={styles.label}>Dirección del Trabajo:</Text>
-                <TextInput
-                    style={styles.input}
-                    placeholder="Calle, número, colonia, barrio, etc."
-                    value={direccion}
-                    onChangeText={setDireccion}
-                />
-            </View>
+      <View style={styles.container}>
+        <Text style={styles.title}>Contactar a {nombreEmprendedor}</Text>
+        <Text style={styles.helperText}>
+          Comparte tu dirección y un mensaje para que el emprendedor sepa
+          dónde y qué necesitas.
+        </Text>
 
-            <Button
-                title={cargando ? 'Enviando...' : 'Enviar Solicitud'}
-                onPress={handleEnviarSolicitud}
-                disabled={cargando}
-            />
+        <Text style={styles.label}>Dirección del trabajo (*)</Text>
+        <TextInput
+          style={styles.input}
+          value={direccionTrabajo}
+          onChangeText={setDireccionTrabajo}
+          placeholder="Ej: Col. Ideal, frente a la pulpería La Bendición"
+        />
 
-            <View style={styles.linkContainer}>
-                <Button 
-                    title="Cancelar y Volver" 
-                    onPress={() => navigation.goBack()}
-                    color="#888"
-                />
-            </View>
-        </ScrollView>
-    );
+        <Text style={styles.label}>Mensaje para el emprendedor</Text>
+        <TextInput
+          style={[styles.input, styles.textArea]}
+          value={mensaje}
+          onChangeText={setMensaje}
+          placeholder="Ej: Necesito que llegue mañana por la tarde, traiga sus propias herramientas..."
+          multiline
+          numberOfLines={4}
+        />
+
+        <View style={styles.buttonContainer}>
+          <Button
+            title={cargando ? 'Enviando...' : 'Enviar solicitud'}
+            onPress={manejarEnviarSolicitud}
+            disabled={cargando}
+          />
+        </View>
+
+        <View style={styles.buttonContainer}>
+          <Button
+            title="Cancelar"
+            color="#888"
+            onPress={() => navigation.goBack()}
+          />
+        </View>
+
+        {cargando && (
+          <View style={styles.loadingOverlay}>
+            <ActivityIndicator size="large" />
+          </View>
+        )}
+      </View>
+    </View>
+  );
 };
 
 const styles = StyleSheet.create({
-    container: { flexGrow: 1, padding: 25, backgroundColor: '#f9f9f9' },
-    title: { fontSize: 28, fontWeight: 'bold', marginBottom: 10, textAlign: 'center' },
-    subtitle: { fontSize: 16, color: '#555', marginBottom: 20, textAlign: 'center' },
-    boldText: { fontWeight: 'bold', color: '#333' },
-    section: { marginBottom: 15 },
-    label: { fontSize: 16, marginBottom: 5, color: '#333' },
-    input: {
-        borderWidth: 1,
-        borderColor: '#ccc',
-        borderRadius: 8,
-        paddingHorizontal: 12,
-        paddingVertical: 10,
-        backgroundColor: '#fff',
-        fontSize: 16,
-    },
-    textArea: { 
-        height: 100, 
-        textAlignVertical: 'top' 
-    },
-    linkContainer: { marginTop: 20 },
+  safeArea: { flex: 1, backgroundColor: '#f0f0f0' },
+  container: { flex: 1, padding: 20 },
+  title: { fontSize: 20, fontWeight: 'bold', marginBottom: 8, color: '#333' },
+  helperText: {
+    fontSize: 13,
+    color: '#777',
+    marginBottom: 16,
+  },
+  label: {
+    fontSize: 15,
+    marginBottom: 5,
+    fontWeight: '600',
+    color: '#555',
+  },
+  input: {
+    backgroundColor: '#fff',
+    borderWidth: 1,
+    borderColor: '#ddd',
+    borderRadius: 8,
+    padding: 10,
+    marginBottom: 15,
+    fontSize: 15,
+  },
+  textArea: {
+    height: 120,
+    textAlignVertical: 'top',
+  },
+  buttonContainer: {
+    marginTop: 8,
+  },
+  loadingOverlay: {
+    marginTop: 12,
+    alignItems: 'center',
+  },
 });
 
-export default EmprendedorContactScreen;
+export default ContactoEmprendedor;

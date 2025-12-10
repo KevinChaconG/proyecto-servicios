@@ -44,6 +44,9 @@ const Trabajo = sequelize.define('Trabajo', {
     type: DataTypes.ENUM('PENDIENTE', 'EN_PROCESO', 'COMPLETADO', 'CANCELADO'),
     allowNull: false,
     defaultValue: 'PENDIENTE'
+  },
+  descripcion:{
+    type: DataTypes.STRING(255)
   }
 }, {
   tableName: 'trabajo',

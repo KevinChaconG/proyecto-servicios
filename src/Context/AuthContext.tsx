@@ -7,6 +7,7 @@ export interface Usuario {
   email: string;
   telefono?: string;
   rol_usuario: 'CLIENTE' | 'EMPRENDEDOR' | 'ADMIN';
+  id_emprendedor?: number;
 }
 
 interface AuthContextType {

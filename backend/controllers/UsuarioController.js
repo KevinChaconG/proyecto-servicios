@@ -2,120 +2,140 @@ const { Usuario, Emprendedor } = require('../Modelos');
 const bcrypt = require('bcrypt');
 
 async function obtenerUsuarios(req, res) {
-  try {
-    const usuarios = await Usuario.findAll({
-      attributes: [
-        'id_usuario',
-        'nombre',
-        'apellido',
-        'email',
-        'telefono',
-        'rol_usuario',
-        'estado_usuario',
-        'calificacion_promedio'
-      ]
-    });
-    res.json(usuarios);
-  } catch (error) {
-    console.error('Error al obtener usuarios:', error);
-    res.status(500).json({ mensaje: 'Error en el servidor' });
-  }
+    try {
+        const usuarios = await Usuario.findAll({
+            attributes: [
+                'id_usuario',
+                'nombre',
+                'apellido',
+                'email',
+                'telefono',
+                'rol_usuario',
+                'estado_usuario',
+                'calificacion_promedio'
+            ]
+        });
+        res.json(usuarios);
+    } catch (error) {
+        console.error('Error al obtener usuarios:', error);
+        res.status(500).json({ mensaje: 'Error en el servidor' });
+    }
 }
 
 
 async function registrarUsuario(req, res) {
-  try {
-    const { nombre, apellido, email, telefono, password, rol_usuario } = req.body;
+  try {
+    const { nombre, apellido, email, telefono, password, rol_usuario } = req.body;
 
-    if (!nombre || !email || !password || !rol_usuario) {
-      return res.status(400).json({ mensaje: 'Faltan datos obligatorios' });
-    }
+    if (!nombre || !email || !password || !rol_usuario) {
+      return res.status(400).json({ mensaje: 'Faltan datos obligatorios' });
+    }
 
-    const passwordHash = await bcrypt.hash(password, 10);
+    const passwordHash = await bcrypt.hash(password, 10);
 
-    const usuario = await Usuario.create({
-      nombre,
-      apellido,
-      email,
-      telefono,
-      password: passwordHash,  
-      rol_usuario
-    });
+    const usuario = await Usuario.create({
+      nombre,
+      apellido,
+      email,
+      telefono,
+      password: passwordHash,
+      rol_usuario,
+    });
 
-    if (rol_usuario === 'EMPRENDEDOR') {
-      await Emprendedor.create({
-        id_usuario: usuario.id_usuario,
-        disponible: true
-      });
-    }
+    let id_emprendedor = null;
 
-    res.status(201).json({
-      mensaje: 'Usuario registrado correctamente',
-      usuario: {
-        id_usuario: usuario.id_usuario,
-        nombre: usuario.nombre,
-        apellido: usuario.apellido,
-        email: usuario.email,
-        telefono: usuario.telefono,
-        rol_usuario: usuario.rol_usuario
-      }
-    });
+    if (rol_usuario === 'EMPRENDEDOR') {
+      const emprendedor = await Emprendedor.create({
+        id_usuario: usuario.id_usuario,
+        disponible: true,
+      });
+      id_emprendedor = emprendedor.id_emprendedor;
+    }
 
-  } catch (error) {
-    console.error('Error al registrar usuario:', error);
+    res.status(201).json({
+      mensaje: 'Usuario registrado correctamente',
+      usuario: {
+        id_usuario: usuario.id_usuario,
+        nombre: usuario.nombre,
+        apellido: usuario.apellido,
+        email: usuario.email,
+        telefono: usuario.telefono,
+        rol_usuario: usuario.rol_usuario,
+        id_emprendedor, 
+      },
+    });
+  } catch (error) {
+    console.error('Error al registrar usuario:', error);
 
-    if (error.name === 'SequelizeUniqueConstraintError') {
-      return res.status(400).json({ mensaje: 'El email ya está registrado' });
-    }
+    if (error.name === 'SequelizeUniqueConstraintError') {
+      return res.status(400).json({ mensaje: 'El email ya está registrado' });
+    }
 
-    res.status(500).json({ mensaje: 'Error en el servidor' });
-  }
+    res.status(500).json({ mensaje: 'Error en el servidor' });
+  }
 }
-
 
 async function loginUsuario(req, res) {
-  try {
-    const { email, password } = req.body;
+  try {
+    const { email, password } = req.body;
 
-    if (!email || !password) {
-      return res.status(400).json({ mensaje: 'Email y contraseña son obligatorios' });
-    }
+    if (!email || !password) {
+      return res.status(400).json({ mensaje: 'Email y contraseña son obligatorios' });
+    }
 
-    const usuario = await Usuario.findOne({ where: { email } });
+    const usuario = await Usuario.findOne({ where: { email } });
 
-    if (!usuario) {
-      return res.status(401).json({ mensaje: 'Credenciales inválidas' });
-    }
+    if (!usuario) {
+      return res.status(401).json({ mensaje: 'Credenciales inválidas' });
+    }
 
-    const passwordValido = await bcrypt.compare(password, usuario.password);
+    const passwordValido = await bcrypt.compare(password, usuario.password);
 
-    if (!passwordValido) {
-      return res.status(401).json({ mensaje: 'Credenciales inválidas' });
-    }
+    if (!passwordValido) {
+      return res.status(401).json({ mensaje: 'Credenciales inválidas' });
+    }
 
-    res.json({
-      mensaje: 'Login exitoso',
-      usuario: {
-        id_usuario: usuario.id_usuario,
-        nombre: usuario.nombre,
-        apellido: usuario.apellido,
-        email: usuario.email,
-        rol_usuario: usuario.rol_usuario
-      }
-    });
+    let id_emprendedor = null;
 
-  } catch (error) {
-    console.error('Error en login:', error);
-    res.status(500).json({ mensaje: 'Error en el servidor' });
-  }
+    if (usuario.rol_usuario === 'EMPRENDEDOR') {
+      const emprendedor = await Emprendedor.findOne({
+        where: { id_usuario: usuario.id_usuario },
+        attributes: ['id_emprendedor', 'disponible'],
+      });
+
+      if (emprendedor) {
+        id_emprendedor = emprendedor.id_emprendedor;
+      } else {
+        console.warn(
+          `Usuario ${usuario.id_usuario} tiene rol EMPRENDEDOR pero no existe en tabla Emprendedor`
+        );
+      }
+    }
+
+    return res.json({
+      mensaje: 'Login exitoso',
+      usuario: {
+        id_usuario: usuario.id_usuario,
+        nombre: usuario.nombre,
+        apellido: usuario.apellido,
+        email: usuario.email,
+        rol_usuario: usuario.rol_usuario,
+        id_emprendedor,
+      },
+    });
+  } catch (error) {
+    console.error('Error en login:', error);
+    res.status(500).json({ mensaje: 'Error en el servidor' });
+  }
 }
+
 
 
 async function actualizarUsuario(req, res) {
     try {
-        const id_usuario = req.params.id; 
+        const id_usuario = req.params.id;
         const { nombre, apellido, telefono, password } = req.body;
-        
+
         const usuario = await Usuario.findByPk(id_usuario);
 
         if (!usuario) {
@@ -136,7 +156,7 @@ async function actualizarUsuario(req, res) {
         }
 
         await usuario.update(datosAActualizar);
-        res.status(200).json({ 
+        res.status(200).json({
             mensaje: 'Perfil actualizado exitosamente.',
             usuario: {
                 id_usuario: usuario.id_usuario,
@@ -155,8 +175,8 @@ async function actualizarUsuario(req, res) {
 
 
 module.exports = {
-  obtenerUsuarios,
-  registrarUsuario,
-  loginUsuario,
-  actualizarUsuario
+    obtenerUsuarios,
+    registrarUsuario,
+    loginUsuario,
+    actualizarUsuario
 };

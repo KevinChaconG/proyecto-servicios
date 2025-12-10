@@ -14,6 +14,8 @@ import AdminHome from './src/screens/AdminHome';
 import { AuthProvider } from './src/Context/AuthContext';
 import EmprendedorPublicarServicio from './src/screens/EmprendedorPublicarServicio';
 import EmprendedorServicios from './src/screens/EmprendedorServicios';
+import EmprendedorSolicitudes from './src/screens/EmprendedorSolicitudes';
+import ClientSolicitudes from './src/screens/ClientSolicitudes';
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
@@ -40,6 +42,9 @@ export default function App() {
         <Stack.Screen name="EditarPerfil" component={EditarPerfilScreen} options={{ title: 'Mi Perfil' }}/>
         <Stack.Screen name="EmprendedorPublicarServicio"component={EmprendedorPublicarServicio}/>
         <Stack.Screen name="EmprendedorServicios" component={EmprendedorServicios}/>
+        <Stack.Screen name="EmprendedorSolicitudes" component={EmprendedorSolicitudes} />
+        <Stack.Screen name="ClientSolicitudes"component={ClientSolicitudes}/>
+
       </Stack.Navigator>
     </NavigationContainer>
     </AuthProvider>

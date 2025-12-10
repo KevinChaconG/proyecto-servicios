@@ -25,7 +25,6 @@ const AdminHome: React.FC<AdminHomeProps> = ({ navigation }) => {
 
             <View style={styles.container}>
 
-                {/* este boton lo puse para gestionar los servicios iria tipo /GestionarServicios */}
                 <TouchableOpacity
                     style={styles.card}
                     onPress={() => navigateTo('AdminHome')}
@@ -34,7 +33,6 @@ const AdminHome: React.FC<AdminHomeProps> = ({ navigation }) => {
                     <Text style={styles.cardSubtitle}>Revisar y moderar todas las ofertas publicadas.</Text>
                 </TouchableOpacity>
 
-                {/* este es un boton para gestionar los usuarios existentes se va a llamar /GestionarUsuarios */}
                 <TouchableOpacity
                     style={styles.card}
                     onPress={() => navigateTo('AdminHome')}
@@ -43,7 +41,6 @@ const AdminHome: React.FC<AdminHomeProps> = ({ navigation }) => {
                     <Text style={styles.cardSubtitle}>Revisar y modificar los roles ya sea clientes o emprendedores).</Text>
                 </TouchableOpacity>
 
-                {/* aqui estoy poniendo un boton para reportes */}
                 <TouchableOpacity
                     style={styles.card}
                     onPress={() => console.log('ir a Reportes del Sistema')}

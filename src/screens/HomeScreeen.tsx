@@ -30,6 +30,8 @@ export type RootStackParamList = {
     EditarPerfil: undefined;
     EmprendedorPublicarServicio: undefined;
     EmprendedorServicios: undefined;
+    EmprendedorSolicitudes: undefined;
+    ClientSolicitudes: undefined
 };
 
 type HomeScreenProps = NativeStackScreenProps<RootStackParamList, 'Home'>;

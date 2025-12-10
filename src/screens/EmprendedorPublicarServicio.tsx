@@ -6,7 +6,7 @@ import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { RootStackParamList } from './HomeScreeen';
 import { useAuth } from '../Context/AuthContext';
 import ProfileHeader from '../Componentes/ProfileHeader';
-import { crearTrabajoEmprendedor } from '../api/TrabajoApi';
+import { crearServicio } from '../api/servicioAPI';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'EmprendedorPublicarServicio'>;
 
@@ -53,84 +53,63 @@ const EmprendedorPublicarServicio: React.FC<Props> = ({ navigation }) => {
         })();
     }, []);
 
-    const handlePublicar = async () => {
-        if (!usuario) {
-            Alert.alert('Error', 'No hay un emprendedor en sesión.');
-            return;
-        }
+const handlePublicar = async () => {
+  if (!usuario) {
+    Alert.alert('Error', 'No hay un emprendedor en sesión.');
+    return;
+  }
 
-        if (!titulo || !descripcion || !precio) {
-            Alert.alert('Error', 'Título, descripción y precio son obligatorios.');
-            return;
-        }
+  if (!titulo || !descripcion || !precio) {
+    Alert.alert('Error', 'Título, descripción y precio son obligatorios.');
+    return;
+  }
 
-        const precioNumber = Number(precio);
-        if (isNaN(precioNumber) || precioNumber <= 0) {
-            Alert.alert('Error', 'El precio debe ser un número mayor a 0.');
-            return;
-        }
+  const precioNumber = Number(precio);
+  if (isNaN(precioNumber) || precioNumber <= 0) {
+    Alert.alert('Error', 'El precio debe ser un número mayor a 0.');
+    return;
+  }
 
-        if (!selectedLocation) {
-            Alert.alert(
-                'Ubicación requerida',
-                'Por favor selecciona la ubicación en el mapa (mueve el marcador si es necesario).'
-            );
-            return;
-        }
+  if (!selectedLocation) {
+    Alert.alert(
+      'Ubicación requerida',
+      'Por favor selecciona la ubicación en el mapa (mueve el marcador si es necesario).'
+    );
+    return;
+  }
 
-        setCargando(true);
+  setCargando(true);
 
-        try {
-            const nuevoServicio = {
-                titulo,
-                descripcion,
-                precio: precioNumber,
-                contactoEmail,
-                idEmprendedor: usuario.id_usuario,
-                direccion_trabajo: direccionTrabajo,
-                lat: selectedLocation.latitude,
-                lng: selectedLocation.longitude,
-            };
+  try {
+await crearServicio({
+  id_emprendedor: usuario.id_emprendedor ?? 1, 
+  id_categoria: 1,                   
+  titulo,
+  descripcion,
+  precio_base: precioNumber,
+  contacto_email: contactoEmail,
+  direccion_referencia: direccionTrabajo || null,
+  lat: selectedLocation.latitude,
+  lng: selectedLocation.longitude,
+});
 
-            await crearTrabajoEmprendedor({
-                id_emprendedor: usuario.id_usuario,
-                descripcion,
-                precio_acordado: precioNumber,
-                direccion_trabajo: direccionTrabajo || null,
-                lat: selectedLocation.latitude,
-                lng: selectedLocation.longitude,
-                estado: 'DISPONIBLE', // o lo que uses (OPCIONAL)
-            });
+    Alert.alert('Éxito', 'Servicio publicado correctamente.');
 
-            const respuesta = await fetch('http://TU_IP_O_DOMINIO:5050/servicios', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(nuevoServicio),
-            });
+    setTitulo('');
+    setDescripcion('');
+    setPrecio('');
+    setDireccionTrabajo('');
+  } catch (error: any) {
+    console.error('Error al publicar servicio:', error);
+    Alert.alert(
+      'Error',
+      error?.message || 'Ocurrió un problema al publicar el servicio.'
+    );
+  } finally {
+    setCargando(false);
+  }
+};
 
-            if (!respuesta.ok) {
-                const errorBody = await respuesta.text();
-                console.log('Error backend:', errorBody);
-                throw new Error('Error al publicar servicio');
-            }
-
-            Alert.alert('Éxito', 'Servicio publicado correctamente.');
-
-            setTitulo('');
-            setDescripcion('');
-            setPrecio('');
-            setDireccionTrabajo('');
-
-        } catch (error: any) {
-            console.error('Error al publicar servicio:', error);
-            Alert.alert(
-                'Error',
-                error?.message || 'Ocurrió un problema al publicar el servicio.'
-            );
-        } finally {
-            setCargando(false);
-        }
-    };
 
     const renderMapa = () => {
         if (tienePermiso === false) {
